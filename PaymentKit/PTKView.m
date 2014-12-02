@@ -57,7 +57,9 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
 
 #pragma mark -
 
-@implementation PTKView
+@implementation PTKView {
+    BOOL _readOnly;
+}
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -235,7 +237,7 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
     [self.cardNumberField becomeFirstResponder];
 }
 
-- (void)stateMeta
+- (void)stateMetaAnimated:(BOOL)animated
 {
     _isInitialState = NO;
 
@@ -261,12 +263,12 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
 
     CGFloat frameX = self.cardNumberField.frame.origin.x - (cardNumberSize.width - lastGroupSize.width);
 
-    [UIView animateWithDuration:0.05 delay:0.35 options:UIViewAnimationOptionCurveEaseInOut
+    [UIView animateWithDuration:animated ? 0.05 : 0 delay:animated ? 0.35 : 0 options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
                          self.opaqueOverGradientView.alpha = 1.0;
                      } completion:^(BOOL finished) {
-    }];
-    [UIView animateWithDuration:0.400 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            }];
+    [UIView animateWithDuration:animated ? 0.400 : 0 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.cardExpiryField.frame = CGRectMake(kPTKViewCardExpiryFieldEndX,
                 self.cardExpiryField.frame.origin.y,
                 self.cardExpiryField.frame.size.width,
@@ -307,6 +309,41 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
     card.expYear = [self.cardExpiry year];
 
     return card;
+}
+
+- (BOOL)readOnly
+{
+    return _readOnly;
+}
+
+- (void)setReadOnly:(BOOL)readOnly
+{
+    _readOnly = readOnly;
+    self.cardCVCField.enabled = FALSE;
+    self.cardNumberField.enabled = FALSE;
+    self.cardExpiryField.enabled = FALSE;
+    if (_readOnly) {
+        [self setPlaceholderToCardType];
+    }
+}
+
+- (void)setCard:(PTKCard *)card
+{
+    PTKCardNumber *cardNumber = [card.number length] ?
+            [PTKCardNumber cardNumberWithString:card.number] :
+            [PTKCardNumber cardNumberWithString:[NSString stringWithFormat:@"************%@", card.last4]];
+    self.cardNumberField.text = cardNumber.formattedString;
+    if ([card.cvc length]) {
+        self.cardCVCField.text = card.cvc;
+    } else {
+        self.cardCVCField.text = @"***";
+    }
+    if (!card.expMonth && !card.expYear) {
+        self.cardExpiryField.text = [NSString stringWithFormat:@"**/**"];
+    } else {
+        self.cardExpiryField.text = [NSString stringWithFormat:@"%2d/%2d", card.expMonth, card.expYear - 2000];
+    }
+    [self stateMetaAnimated:NO];
 }
 
 - (void)setPlaceholderViewImage:(UIImage *)image
@@ -441,7 +478,7 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
 
     if ([cardNumber isValid]) {
         [self textFieldIsValid:self.cardNumberField];
-        [self stateMeta];
+        [self stateMetaAnimated:YES];
 
     } else if ([cardNumber isValidLength] && ![cardNumber isValidLuhn]) {
         [self textFieldIsInvalid:self.cardNumberField withErrors:YES];
@@ -600,7 +637,7 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
 - (BOOL)resignFirstResponder;
 {
     [super resignFirstResponder];
-    
+
     return [self.firstResponderField resignFirstResponder];
 }
 

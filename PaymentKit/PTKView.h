@@ -38,6 +38,7 @@
 @property IBOutlet PTKTextField *cardCVCField;
 @property IBOutlet UIImageView *placeholderView;
 @property (nonatomic, weak) id <PTKViewDelegate> delegate;
-@property (readonly) PTKCard *card;
+@property (nonatomic) BOOL readOnly;
+@property (nonatomic) PTKCard *card;
 
 @end
