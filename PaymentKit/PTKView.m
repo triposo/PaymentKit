@@ -210,7 +210,7 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
                          animations:^{
                              self.opaqueOverGradientView.alpha = 0.0;
                          } completion:^(BOOL finished) {
-        }];
+                }];
         [UIView animateWithDuration:0.400
                               delay:0
                             options:(UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionAllowUserInteraction)
@@ -336,7 +336,11 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
     if ([card.cvc length]) {
         self.cardCVCField.text = card.cvc;
     } else {
-        self.cardCVCField.text = @"***";
+        if (self.cardNumber.cardType == PTKCardTypeAmex) {
+            self.cardCVCField.text = @"****";
+        } else {
+            self.cardCVCField.text = @"***";
+        }
     }
     if (!card.expMonth && !card.expYear) {
         self.cardExpiryField.text = [NSString stringWithFormat:@"**/**"];
@@ -356,8 +360,8 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
                              self.placeholderView.layer.opacity = 0.0;
                              self.placeholderView.layer.transform = CATransform3DMakeScale(1.2, 1.2, 1.2);
                          } completion:^(BOOL finished) {
-            [previousPlaceholderView removeFromSuperview];
-        }];
+                    [previousPlaceholderView removeFromSuperview];
+                }];
         self.placeholderView = nil;
 
         [self setupPlaceholderView];
@@ -371,7 +375,7 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
                              self.placeholderView.layer.opacity = 1.0;
                              self.placeholderView.layer.transform = CATransform3DIdentity;
                          } completion:^(BOOL finished) {
-        }];
+                }];
     }
 }
 
