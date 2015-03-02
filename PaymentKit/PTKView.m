@@ -232,9 +232,9 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
                              [self.cardExpiryField removeFromSuperview];
                              [self.cardCVCField removeFromSuperview];
                          }];
-    }
 
-    [self.cardNumberField becomeFirstResponder];
+        [self.cardNumberField becomeFirstResponder];
+    }
 }
 
 - (void)stateMetaAnimated:(BOOL)animated
