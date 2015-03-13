@@ -347,7 +347,11 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
     } else {
         self.cardExpiryField.text = [NSString stringWithFormat:@"%2d/%2d", card.expMonth, card.expYear - 2000];
     }
-    [self stateMetaAnimated:NO];
+    if (_isInitialState) {
+        [self stateMetaAnimated:NO];
+    }
+    [self.cardExpiryField resignFirstResponder];
+    [self setPlaceholderToCardType];
 }
 
 - (void)setPlaceholderViewImage:(UIImage *)image
