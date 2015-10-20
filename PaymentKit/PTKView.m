@@ -6,6 +6,9 @@
 //  Copyright (c) 2013 Stripe. All rights reserved.
 //
 
+#import "PTKView.h"
+#import "PTKTextField.h"
+
 #define RGB(r,g,b) [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:1.0f]
 #define DarkGreyColor RGB(0,0,0)
 #define RedColor RGB(253,0,17)
@@ -19,11 +22,10 @@
 #define kPTKViewCardExpiryFieldEndX 84
 #define kPTKViewCardCVCFieldEndX 177
 
+#define kPTKBundle [NSBundle bundleForClass:[PTKView class]]
+
 static NSString *const kPTKLocalizedStringsTableName = @"PaymentKit";
 static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable";
-
-#import "PTKView.h"
-#import "PTKTextField.h"
 
 @interface PTKView () <PTKTextFieldDelegate> {
 @private
@@ -85,7 +87,7 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
     self.backgroundColor = [UIColor clearColor];
 
     UIImageView *backgroundImageView = [[UIImageView alloc] initWithFrame:self.bounds];
-    backgroundImageView.image = [[UIImage imageNamed:@"textfield"]
+    backgroundImageView.image = [[UIImage imageNamed:@"textfield" inBundle:kPTKBundle compatibleWithTraitCollection:nil]
             resizableImageWithCapInsets:UIEdgeInsetsMake(0, 8, 0, 8)];
     [self addSubview:backgroundImageView];
 
@@ -100,7 +102,7 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
     [self.innerView addSubview:self.cardNumberField];
 
     UIImageView *gradientImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 12, 34)];
-    gradientImageView.image = [UIImage imageNamed:@"gradient"];
+    gradientImageView.image = [UIImage imageNamed:@"gradient" inBundle:kPTKBundle compatibleWithTraitCollection:nil];
     [self.innerView addSubview:gradientImageView];
 
     self.opaqueOverGradientView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 9, 34)];
@@ -120,7 +122,7 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
 {
     self.placeholderView = [[UIImageView alloc] initWithFrame:CGRectMake(12, 13, 32, 20)];
     self.placeholderView.backgroundColor = [UIColor clearColor];
-    self.placeholderView.image = [UIImage imageNamed:@"placeholder"];
+    self.placeholderView.image = [UIImage imageNamed:@"placeholder" inBundle:kPTKBundle compatibleWithTraitCollection:nil];
 
     CALayer *clip = [CALayer layer];
     clip.frame = CGRectMake(32, 0, 4, 20);
@@ -231,9 +233,8 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
                          completion:^(BOOL completed) {
                              [self.cardExpiryField removeFromSuperview];
                              [self.cardCVCField removeFromSuperview];
+                             [self.cardNumberField becomeFirstResponder];
                          }];
-
-        [self.cardNumberField becomeFirstResponder];
     }
 }
 
@@ -389,9 +390,9 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
     PTKCardType cardType = [cardNumber cardType];
 
     if (cardType == PTKCardTypeAmex) {
-        [self setPlaceholderViewImage:[UIImage imageNamed:@"cvc-amex"]];
+        [self setPlaceholderViewImage:[UIImage imageNamed:@"cvc-amex" inBundle:kPTKBundle compatibleWithTraitCollection:nil]];
     } else {
-        [self setPlaceholderViewImage:[UIImage imageNamed:@"cvc"]];
+        [self setPlaceholderViewImage:[UIImage imageNamed:@"cvc" inBundle:kPTKBundle compatibleWithTraitCollection:nil]];
     }
 }
 
@@ -424,7 +425,7 @@ static NSString *const kPTKOldLocalizedStringsTableName = @"STPaymentLocalizable
             break;
     }
 
-    [self setPlaceholderViewImage:[UIImage imageNamed:cardTypeName]];
+    [self setPlaceholderViewImage:[UIImage imageNamed:cardTypeName inBundle:kPTKBundle compatibleWithTraitCollection:nil]];
 }
 
 #pragma mark - Delegates
